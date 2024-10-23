@@ -1,14 +1,24 @@
 import cv2
+import os
 
 # Open the video file
-video_path = "x.mp4"  # Replace with your video file path
+video_path = "x.mp4"
 cap = cv2.VideoCapture(video_path)
 
 # Define the coordinates of the pixel to check (x, y)
-pixel_x = 100  # Horizontal coordinate
-pixel_y = 200  # Vertical coordinate
+pixel_x = 100
+pixel_y = 200
+
+# Create the folder to save frames
+save_folder = "video_frames"
+if not os.path.exists(save_folder):
+    os.makedirs(save_folder)
 
 frame_number = 0
+
+# Target RGB (blue, green, red)
+target_RGB = (90, 70, 60)
+colour_shift = 10
 
 while True:
     ret, frame = cap.read()  # Read the next frame
@@ -20,16 +30,19 @@ while True:
         print("Error: Pixel coordinates are out of frame bounds.")
         break
 
+    # Get the BGR color of the specific pixel
     pixel_color = frame[pixel_y, pixel_x]
     blue, green, red = pixel_color
 
-    # Save the current frame to disk
-    frame_filename = f'frame_{frame_number}.jpg'
-    cv2.imwrite(frame_filename, frame)
-
     # Print the BGR color of the specific pixel for this frame
-    print(f"Frame {frame_number}: Pixel ({pixel_x}, {pixel_y}) - BGR: ({blue}, {green}, {red})")
-    
+    if blue < (target_RGB[0] - colour_shift) or blue > (target_RGB[0] + colour_shift):
+        # Save the current frame to the designated folder as a .jpg file
+        frame_filename = os.path.join(save_folder, f"frame_{frame_number}.jpg")
+        cv2.imwrite(frame_filename, frame)
+        print(
+            f"Frame {frame_number}: Pixel ({pixel_x}, {pixel_y}) - BGR: ({blue}, {green}, {red}) saved as {frame_filename}"
+        )
+
     frame_number += 1
 
 # Release the video capture object
