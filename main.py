@@ -34,11 +34,21 @@ while True:
     pixel_color = frame[pixel_y, pixel_x]
     blue, green, red = pixel_color
 
-    # Print the BGR color of the specific pixel for this frame
+    # Check if the blue value is out of the target range
     if blue < (target_RGB[0] - colour_shift) or blue > (target_RGB[0] + colour_shift):
-        # Save the current frame to the designated folder as a .jpg file
+        # Draw a circle around the specific pixel
+        frame_with_circle = frame.copy()
+        cv2.circle(
+            frame_with_circle,
+            (pixel_x, pixel_y),
+            radius=10,
+            color=(0, 0, 255),
+            thickness=2,
+        )
+
+        # Save the frame with the circle to the designated folder as a .jpg file
         frame_filename = os.path.join(save_folder, f"frame_{frame_number}.jpg")
-        cv2.imwrite(frame_filename, frame)
+        cv2.imwrite(frame_filename, frame_with_circle)
         print(
             f"Frame {frame_number}: Pixel ({pixel_x}, {pixel_y}) - BGR: ({blue}, {green}, {red}) saved as {frame_filename}"
         )
